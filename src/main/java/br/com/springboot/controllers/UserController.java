@@ -2,6 +2,8 @@ package br.com.springboot.controllers;
 
 import java.util.*;
 
+import br.com.springboot.repository.*;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,27 +17,27 @@ public class UserController {
 
     private List<User> users = new ArrayList<>();
 
+    @Autowired
+    private UserRepository userRepository;
+
     @GetMapping("/{id}")
-    public Object user(@PathVariable("id") Long id) {
-
-        Optional<User> userFind = users.stream().filter(user -> user.getId() == id).findFirst();
-
-        if (userFind.isPresent()) {
-            return userFind.get();
-        }
-        return null;
+    public Optional<User> user(@PathVariable("id") Long id) {
+        return this.userRepository.findById(id);
     }
 
     @PostMapping("/")
     public User user(@RequestBody User user) {
-        users.add(user);
-        return user;
-
+       return this.userRepository.save(user);
     }
 
     @GetMapping("/list")
     public List<User> list() {
-        return users;
+        return this.userRepository.findAll();
+    }
+
+    @GetMapping("/list{id}")
+    public List<User> listMoreThan(@PathVariable("id") Long id) {
+        return this.userRepository.findAllMoreThan(id);
     }
 
 }
